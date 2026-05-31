@@ -39,30 +39,30 @@ const CustomTooltip = ({
 export const TotalAllocationChart = ({ breakdown, totalValueKRW, exchangeRate }: Props) => {
   if (!breakdown.length) {
     return (
-      <Card className="glass p-5">
-        <h3 className="font-display font-semibold mb-2">\ucd1d\uc790\uc0b0 \uad6c\uc131</h3>
-        <p className="text-xs text-muted-foreground">
-          \uac70\ub798\uc18c\ub97c \uc5f0\uacb0\ud558\uba74 \uc790\uc0b0 \uad6c\uc131\uc744 \ud655\uc778\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.
+      <Card className="glass p-4 md:p-5">
+        <h3 className="font-display text-sm font-semibold mb-1">총자산 구성</h3>
+        <p className="text-sm text-muted-foreground">
+          거래소를 연결하면 자산 구성을 확인할 수 있습니다.
         </p>
       </Card>
     );
   }
 
   return (
-    <Card className="glass p-5">
+    <Card className="glass p-4 md:p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="font-display font-semibold">\ucd1d\uc790\uc0b0 \uad6c\uc131</h3>
-          <p className="text-xs text-muted-foreground">
-            \ud658\uc728: {formatKRW(exchangeRate)}/USD
+          <h3 className="font-display text-sm font-semibold">총자산 구성</h3>
+          <p className="font-label mt-0.5">
+            환율: {formatKRW(exchangeRate)}/USD
           </p>
         </div>
-        <span className="font-display text-2xl font-semibold">
+        <span className="font-display text-xl md:text-2xl font-semibold leading-tight">
           {formatKRW(totalValueKRW)}
         </span>
       </div>
-      <div className="flex items-center gap-6">
-        <div className="w-48 h-48">
+      <div className="flex flex-col md:flex-row items-center gap-6">
+        <div className="w-44 h-44 md:w-48 md:h-48 shrink-0">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -85,7 +85,7 @@ export const TotalAllocationChart = ({ breakdown, totalValueKRW, exchangeRate }:
             </PieChart>
           </ResponsiveContainer>
         </div>
-        <ul className="flex-1 space-y-3">
+        <ul className="flex-1 w-full space-y-3">
           {breakdown.map((b) => {
             const pct = totalValueKRW > 0 ? (b.valueKRW / totalValueKRW) * 100 : 0;
             return (
@@ -94,14 +94,14 @@ export const TotalAllocationChart = ({ breakdown, totalValueKRW, exchangeRate }:
                   className="h-3 w-3 rounded-full shrink-0"
                   style={{ background: b.color }}
                 />
-                <span className="w-20 text-muted-foreground">{b.label}</span>
+                <span className="w-20 text-muted-foreground text-sm">{b.label}</span>
                 <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all duration-500"
                     style={{ width: `${pct}%`, background: b.color }}
                   />
                 </div>
-                <span className="font-mono text-muted-foreground w-16 text-right">
+                <span className="font-mono text-muted-foreground w-16 text-right text-xs tabular-nums">
                   {pct.toFixed(1)}%
                 </span>
               </li>

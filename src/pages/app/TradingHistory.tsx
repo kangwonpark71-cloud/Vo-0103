@@ -11,14 +11,14 @@ export default function TradingHistory() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-2xl md:text-3xl font-semibold tracking-tight">
+        <h1 className="font-display text-xl md:text-2xl font-semibold tracking-tight">
           거래 내역
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           최근 거래 기록을 확인합니다.
         </p>
       </div>
-      <Card className="glass p-5">
+      <Card className="glass p-4 md:p-5">
         <Table>
           <TableHeader>
             <TableRow>
@@ -32,15 +32,15 @@ export default function TradingHistory() {
           <TableBody>
             {mockTrades.map((t) => (
               <TableRow key={t.id}>
-                <TableCell className="text-xs text-muted-foreground">{t.time}</TableCell>
-                <TableCell className="font-mono">{t.symbol}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">{t.time}</TableCell>
+                <TableCell className="font-mono text-sm font-medium">{t.symbol}</TableCell>
                 <TableCell>
-                  <span className={t.type === 'buy' ? 'text-bull' : 'text-bear'}>
+                  <span className={`text-sm font-medium ${t.type === 'buy' ? 'text-bull' : 'text-bear'}`}>
                     {t.type === 'buy' ? '매수' : '매도'}
                   </span>
                 </TableCell>
-                <TableCell className="text-right font-mono">{t.amount}</TableCell>
-                <TableCell className="text-right font-mono">
+                <TableCell className="text-right font-mono tabular-nums">{t.amount}</TableCell>
+                <TableCell className="text-right font-mono tabular-nums">
                   {t.price.toLocaleString('ko-KR')}
                 </TableCell>
               </TableRow>

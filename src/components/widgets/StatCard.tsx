@@ -18,16 +18,14 @@ export function StatCard({ label, value, delta, hint, icon: Icon, accent = 'prim
   };
 
   return (
-    <Card className="glass p-5">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-          {label}
-        </span>
-        <Icon className={`h-5 w-5 ${colorMap[accent]}`} />
+    <Card className="glass p-4 md:p-5">
+      <div className="flex items-center justify-between mb-2">
+        <span className="font-label">{label}</span>
+        <Icon className={`h-4 w-4 ${colorMap[accent]}`} />
       </div>
-      <div className="font-display text-2xl font-semibold">{value}</div>
+      <div className="font-display text-xl md:text-2xl font-semibold leading-tight">{value}</div>
       {(delta !== undefined || hint) && (
-        <div className="mt-1 text-xs text-muted-foreground">
+        <div className="mt-1.5 text-xs text-muted-foreground">
           {delta !== undefined && (
             <span className={delta >= 0 ? 'text-bull' : 'text-bear'}>
               {delta >= 0 ? '+' : ''}{delta.toFixed(1)}%

@@ -14,22 +14,22 @@ const navItems = [
 function Nav() {
   const location = useLocation();
   return (
-    <nav className="flex items-center gap-1 border-b bg-white px-6 py-3">
-      <span className="font-display text-lg mr-6">Wemarket Coin</span>
+    <nav className="flex items-center gap-1 border-b bg-white px-4 md:px-6 py-2.5">
+      <span className="font-display text-base md:text-lg mr-6 md:mr-8 tracking-tight">Wemarket Coin</span>
       {navItems.map((item) => {
         const active = location.pathname.startsWith(item.to);
         return (
           <Link
             key={item.to}
             to={item.to}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               active
-                ? 'bg-primary text-white'
-                : 'text-gray-600 hover:bg-gray-100'
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
             }`}
           >
             <item.icon className="h-4 w-4" />
-            {item.label}
+            <span className="hidden sm:inline">{item.label}</span>
           </Link>
         );
       })}

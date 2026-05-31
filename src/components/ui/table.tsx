@@ -29,7 +29,7 @@ export function TableRow({ className, children }: HTMLAttributes<HTMLTableRowEle
 
 export function TableHead({ className, children, ...props }: ThHTMLAttributes<HTMLTableCellElement>) {
   return (
-    <th className={cn('h-12 px-4 text-left align-middle font-medium text-gray-500', className)} {...props}>
+    <th className={cn('h-10 px-4 text-left align-middle font-label', className)} {...props}>
       {children}
     </th>
   );
@@ -37,7 +37,7 @@ export function TableHead({ className, children, ...props }: ThHTMLAttributes<HT
 
 export function TableCell({ className, children, ...props }: TdHTMLAttributes<HTMLTableCellElement>) {
   return (
-    <td className={cn('p-4 align-middle', className)} {...props}>
+    <td className={cn('px-4 py-3 align-middle text-sm', className)} {...props}>
       {children}
     </td>
   );

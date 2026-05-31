@@ -41,7 +41,7 @@ export function CoinOneTicker() {
 
   if (!tickers.length) {
     return (
-      <Card className="glass p-3">
+      <Card className="glass p-2.5 md:p-3">
         <div className="flex gap-4 justify-center text-xs text-muted-foreground">
           {SYMBOLS.map((s) => (
             <span key={s} className="font-mono">{s}: --</span>
@@ -52,17 +52,17 @@ export function CoinOneTicker() {
   }
 
   return (
-    <Card className="glass p-3">
-      <div className="flex gap-4 justify-center text-xs">
+    <Card className="glass p-2.5 md:p-3">
+      <div className="flex flex-wrap gap-x-4 gap-y-1 justify-center text-xs">
         {tickers.map((t) => (
-          <div key={t.symbol} className="flex items-center gap-1">
-            <span className="font-medium">{t.symbol}</span>
-            <span className="font-mono">
+          <div key={t.symbol} className="flex items-center gap-1.5">
+            <span className="font-medium text-gray-700">{t.symbol}</span>
+            <span className="font-mono tabular-nums">
               ₩{t.price.toLocaleString('ko-KR')}
             </span>
-            <span className={`flex items-center ${t.change >= 0 ? 'text-bull' : 'text-bear'}`}>
+            <span className={`inline-flex items-center gap-0.5 ${t.change >= 0 ? 'text-bull' : 'text-bear'}`}>
               {t.change >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-              {Math.abs(t.change).toFixed(1)}%
+              <span className="font-mono tabular-nums">{Math.abs(t.change).toFixed(1)}%</span>
             </span>
           </div>
         ))}

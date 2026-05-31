@@ -5,11 +5,13 @@ import { AIBriefing } from "@/components/widgets/AIBriefing";
 import { RiskScore } from "@/components/widgets/RiskScore";
 import { WhaleAlerts } from "@/components/widgets/WhaleAlerts";
 import { CorrelationAnalysis } from "@/components/widgets/CorrelationAnalysis";
-import { Wallet, TrendingUp, Activity, Bitcoin } from "lucide-react";
+import { TradeJournal } from "@/components/widgets/TradeJournal";
+import { Wallet, TrendingUp, Activity, Bitcoin, RefreshCw } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { CoinOneTicker } from "@/components/widgets/CoinOneTicker";
 import { usePortfolioAutoSync } from "@/hooks/usePortfolioAutoSync";
 import { formatKRW } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -27,22 +29,20 @@ export default function Dashboard() {
     <div className="space-y-6">
         <div className="flex items-end justify-between flex-wrap gap-3">
           <div>
-            <h1 className="font-display text-2xl md:text-3xl font-semibold tracking-tight">
-              {`\ud604\uc7ac \uc2dc\uac04\uc740 ${new Date().toLocaleTimeString('ko-KR', { hour: 'numeric', minute: 'numeric' })} \uc785\ub2c8\ub2e4, ${user?.nickname || ''}\ub2d8`}
+            <h1 className="font-display text-xl md:text-2xl font-semibold tracking-tight">
+              현재 시간은 {new Date().toLocaleTimeString('ko-KR', { hour: 'numeric', minute: 'numeric' })} 입니다, {user?.nickname || ''}님
             </h1>
             <p className="text-sm text-muted-foreground">
               \ud604\uc7ac \ud3ec\ud2b8\ud3f4\ub9ac\uc624 \uc0c1\ud669\uc785\ub2c8\ub2e4.
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              className="px-2 py-1 text-sm bg-primary-100 hover:bg-primary-200 rounded"
-              onClick={refresh}
-            >
-              \uc0c8\ub85c\uace0\uce68
-            </button>
-            <div className="text-xs font-mono text-muted-foreground">
-              {stats ? '\ucd5c\uadfc \ub3d9\uae30\ud654 \uc644\ub8cc' : '\ub3d9\uae30\ud654 \ub300\uae30 \uc911'} | {new Date().toLocaleTimeString('ko-KR')}
+          <div className="flex items-center gap-3">
+            <Button variant="outline" onClick={refresh} className="gap-1.5 h-8 text-xs px-3">
+              <RefreshCw className="h-3.5 w-3.5" />
+              새로고침
+            </Button>
+            <div className="text-[11px] font-mono text-muted-foreground">
+              {stats ? '최근 동기화 완료' : '동기화 대기 중'} | {new Date().toLocaleTimeString('ko-KR')}
             </div>
           </div>
         </div>
@@ -91,6 +91,8 @@ export default function Dashboard() {
           <WhaleAlerts />
         </div>
       </div>
+
+      <TradeJournal />
     </div>
   );
 }

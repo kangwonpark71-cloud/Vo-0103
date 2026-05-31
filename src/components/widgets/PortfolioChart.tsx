@@ -35,34 +35,34 @@ export const PortfolioChart = () => {
   const positive = change >= 0;
 
   return (
-    <Card className="glass p-5">
+    <Card className="glass p-4 md:p-5">
       <div className="flex items-start justify-between mb-3">
         <div>
-          <h3 className="font-display font-semibold">포트폴리오 가치</h3>
-          <p className="text-xs text-muted-foreground">최근 24시간 실시간</p>
+          <h3 className="font-display text-sm font-semibold">포트폴리오 가치</h3>
+          <p className="font-label mt-0.5">최근 24시간 실시간</p>
         </div>
         <div className="text-right">
-          <div className="font-display text-2xl font-semibold">₩ 38,420,500</div>
-          <div className={`text-sm font-mono ${positive ? "text-primary" : "text-bear"}`}>
+          <div className="font-display text-xl md:text-2xl font-semibold leading-tight">₩ 38,420,500</div>
+          <div className={`text-sm font-mono tabular-nums ${positive ? "text-primary" : "text-bear"}`}>
             {positive ? "+" : ""}
             {change.toFixed(2)}%
           </div>
         </div>
       </div>
-      <div className="w-full">
-        <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-56">
+      <div className="w-full -mx-0.5">
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-48 md:h-56">
           <defs>
             <linearGradient id="grad" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.45" />
-              <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
+              <stop offset="0%" stopColor={positive ? "#22c55e" : "#3b82f6"} stopOpacity="0.4" />
+              <stop offset="100%" stopColor={positive ? "#22c55e" : "#3b82f6"} stopOpacity="0" />
             </linearGradient>
           </defs>
           {[0.25, 0.5, 0.75].map((p) => (
-            <line key={p} x1={P} x2={W - P} y1={H * p} y2={H * p} stroke="hsl(var(--border))" strokeDasharray="3 4" opacity="0.4" />
+            <line key={p} x1={P} x2={W - P} y1={H * p} y2={H * p} stroke="#e5e7eb" strokeDasharray="3 4" opacity="0.4" />
           ))}
           <path d={area} fill="url(#grad)" />
-          <path d={line} fill="none" stroke="hsl(var(--primary))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          <circle cx={xScale(points.length - 1)} cy={yScale(last)} r="4" fill="hsl(var(--primary))" className="animate-pulse-glow" />
+          <path d={line} fill="none" stroke={positive ? "#22c55e" : "#3b82f6"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx={xScale(points.length - 1)} cy={yScale(last)} r="4" fill={positive ? "#22c55e" : "#3b82f6"} className="animate-pulse-glow" />
         </svg>
       </div>
     </Card>

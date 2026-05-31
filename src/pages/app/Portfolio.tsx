@@ -46,8 +46,8 @@ const Portfolio = () => {
       {/* 헤더 */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl md:text-3xl font-semibold tracking-tight">
-            \ud1b5\ud569 \ud3ec\ud2b8\ud3f4\ub9ac\uc624
+          <h1 className="font-display text-xl md:text-2xl font-semibold tracking-tight">
+            통합 포트폴리오
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
             \ubaa8\ub4e0 \uac70\ub798\uc18c \uc790\uc0b0\uc744 \ud1b5\ud569\ud55c \ucd1d\ud568\uaca9 \ubc0f \ubd84\uc11d
@@ -94,44 +94,36 @@ const Portfolio = () => {
 
           {/* 요약 stat 카드 */}
           <div className="grid gap-4 md:grid-cols-4">
-            <Card className="glass p-5">
-              <div className="text-sm text-muted-foreground">
-                \ucd1d \ud3ec\ud2b8\ud3f4\ub9ac\uc624 \uac00\uce58
-              </div>
-              <div className="mt-2 font-display text-3xl font-semibold">
+            <Card className="glass p-4 md:p-5">
+              <div className="font-label">총 포트폴리오 가치</div>
+              <div className="mt-2 font-display text-xl md:text-2xl font-semibold leading-tight">
                 {formatKRW(summary?.totalValueKRW ?? 0)}
               </div>
-              <div className="mt-1 text-[11px] text-muted-foreground font-mono">
-                \ud658\uc728: {formatKRW(exchangeRate)}/USD
+              <div className="mt-1.5 text-xs text-muted-foreground font-mono tabular-nums">
+                환율: {formatKRW(exchangeRate)}/USD
               </div>
             </Card>
-            <Card className="glass p-5">
-              <div className="text-sm text-muted-foreground">
-                \ubcf4\uc720 \uc790\uc0b0
-              </div>
-              <div className="mt-2 font-display text-3xl font-semibold">
+            <Card className="glass p-4 md:p-5">
+              <div className="font-label">보유 자산</div>
+              <div className="mt-2 font-display text-xl md:text-2xl font-semibold leading-tight">
                 {summary?.holdingCount ?? 0}
               </div>
-              <div className="mt-1 text-[11px] text-muted-foreground font-mono">
+              <div className="mt-1.5 text-xs text-muted-foreground font-mono">
                 {Object.entries(exchangeCounts)
                   .map(([ex, count]) => `${ex}: ${count}`)
                   .join(' | ')}
               </div>
             </Card>
-            <Card className="glass p-5">
-              <div className="text-sm text-muted-foreground">
-                BTC \ube44\uc911
-              </div>
-              <div className="mt-2 font-display text-3xl font-semibold">
+            <Card className="glass p-4 md:p-5">
+              <div className="font-label">BTC 비중</div>
+              <div className="mt-2 font-display text-xl md:text-2xl font-semibold leading-tight">
                 {formatPercent(btcRatio)}
               </div>
               <Progress value={btcRatio} className="mt-3" />
             </Card>
-            <Card className="glass p-5">
-              <div className="text-sm text-muted-foreground">
-                \uc54c\ud2b8 \ube44\uc911
-              </div>
-              <div className="mt-2 font-display text-3xl font-semibold">
+            <Card className="glass p-4 md:p-5">
+              <div className="font-label">알트 비중</div>
+              <div className="mt-2 font-display text-xl md:text-2xl font-semibold leading-tight">
                 {formatPercent(altRatio)}
               </div>
               <Progress value={altRatio} className="mt-3" />
@@ -139,11 +131,11 @@ const Portfolio = () => {
           </div>
 
           {/* 보유 자산 테이블 */}
-          <Card className="glass p-5">
+          <Card className="glass p-4 md:p-5">
             <div className="mb-4 flex items-center gap-2">
               <Wallet className="h-4 w-4 text-primary" />
-              <h2 className="font-display font-semibold">
-                \ubcf4\uc720 \uc790\uc0b0 \ubaa9\ub85d
+              <h2 className="font-display text-sm font-semibold">
+                보유 자산 목록
               </h2>
             </div>
             <Table>
@@ -206,14 +198,13 @@ const Portfolio = () => {
         </>
       ) : !loading ? (
         /* 빈 상태 */
-        <Card className="glass p-8 text-center">
+        <Card className="glass p-6 md:p-8 text-center">
           <Wallet className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-          <h2 className="font-display text-lg font-semibold mb-1">
-            \uc5f0\uacb0\ub41c \uac70\ub798\uc18c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4
+          <h2 className="font-display text-base font-semibold mb-1">
+            연결된 거래소가 없습니다
           </h2>
-          <p className="text-sm text-muted-foreground mb-4">
-            Settings\uc5d0\uc11c \uac70\ub798\uc18c\ub97c \uc5f0\uacb0\ud558\uba74
-            \ud3ec\ud2b8\ud3f4\ub9ac\uc624\uac00 \uc790\ub3d9\uc73c\ub85c \ubd88\ub7ec\uc628\ub2c8\ub2e4.
+          <p className="text-sm text-muted-foreground mb-4 max-w-xs mx-auto">
+            Settings에서 거래소를 연결하면 포트폴리오가 자동으로 불러옵니다.
           </p>
           <Button variant="outline" onClick={refresh} disabled={loading}>
             <RefreshCw
