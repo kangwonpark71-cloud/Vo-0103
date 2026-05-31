@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { aggregatePortfolio } from '@/lib/aggregatePortfolio';
-import type { AggregateResult } from '@/lib/aggregatePortfolio';
+import type { AggregateResult, ClassBreakdown } from '@/lib/aggregatePortfolio';
+import type { PortfolioHolding } from '@/lib/portfolioModel';
 
 interface PortfolioStats {
   portfolioValueKRW: number;
@@ -12,6 +13,14 @@ interface PortfolioStats {
 
 interface UsePortfolioAutoSyncResult {
   stats: PortfolioStats | null;
+  /** 전체 집계 데이터 (차트/분석용) */
+  aggregateData: AggregateResult | null;
+  /** 자산군별 분류 데이터 */
+  classBreakdown: ClassBreakdown[];
+  /** 개별 보유 자산 목록 */
+  holdings: PortfolioHolding[];
+  /** KRW/USD 환율 */
+  exchangeRate: number;
   loading: boolean;
   error: string | null;
   refresh: () => Promise<void>;
@@ -19,6 +28,7 @@ interface UsePortfolioAutoSyncResult {
 
 export function usePortfolioAutoSync(): UsePortfolioAutoSyncResult {
   const [stats, setStats] = useState<PortfolioStats | null>(null);
+  const [aggregateData, setAggregateData] = useState<AggregateResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const mountedRef = useRef(true);
@@ -29,6 +39,7 @@ export function usePortfolioAutoSync(): UsePortfolioAutoSyncResult {
     try {
       const result: AggregateResult = await aggregatePortfolio();
       if (mountedRef.current) {
+        setAggregateData(result);
         setStats({
           portfolioValueKRW: result.summary.portfolioValueKRW,
           btcRatio: result.summary.btcRatio,
@@ -54,5 +65,14 @@ export function usePortfolioAutoSync(): UsePortfolioAutoSyncResult {
     return () => { mountedRef.current = false; };
   }, [refresh]);
 
-  return { stats, loading, error, refresh };
+  return {
+    stats,
+    aggregateData,
+    classBreakdown: aggregateData?.classBreakdown ?? [],
+    holdings: aggregateData?.holdings ?? [],
+    exchangeRate: aggregateData?.exchangeRate ?? 0,
+    loading,
+    error,
+    refresh,
+  };
 }

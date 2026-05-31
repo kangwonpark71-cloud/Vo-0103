@@ -1,26 +1,39 @@
 import { StatCard } from "@/components/widgets/StatCard";
 import { PortfolioChart } from "@/components/widgets/PortfolioChart";
-import { AllocationChart } from "@/components/widgets/AllocationChart";
 import { AIBriefing } from "@/components/widgets/AIBriefing";
 import { RiskScore } from "@/components/widgets/RiskScore";
 import { WhaleAlerts } from "@/components/widgets/WhaleAlerts";
 import { CorrelationAnalysis } from "@/components/widgets/CorrelationAnalysis";
 import { TradeJournal } from "@/components/widgets/TradeJournal";
+import { TotalAllocationChart } from "@/components/widgets/TotalAllocationChart";
 import { Wallet, TrendingUp, Activity, Bitcoin, RefreshCw } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { CoinOneTicker } from "@/components/widgets/CoinOneTicker";
 import { usePortfolioAutoSync } from "@/hooks/usePortfolioAutoSync";
 import { formatKRW } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import type { CorrelationPair } from "@/lib/correlationAnalysis";
+import { getPersonalizedCorrelations } from "@/lib/correlationAnalysis";
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { stats, loading, refresh } = usePortfolioAutoSync();
+  const { stats, classBreakdown, holdings, exchangeRate, loading, refresh } = usePortfolioAutoSync();
+
+  const totalValueKRW = stats?.portfolioValueKRW ?? 0;
+
+  // 리스크 점수: BTC 비중(높을수록 위험) + 자산 분산도 반영
+  const riskScore = stats
+    ? Math.min(100, Math.round(stats.btcRatio * 0.6 + Math.max(0, 100 - holdings.length * 8) * 0.4))
+    : 0;
+
+  const correlations: CorrelationPair[] = classBreakdown.length > 0
+    ? getPersonalizedCorrelations(classBreakdown, totalValueKRW)
+    : [];
 
   if (loading) {
     return (
       <div className="p-6 text-center text-muted-foreground">
-        \ub370\uc774\ud130\ub97c \ubd88\ub7ec\uc624\ub294 \uc911...
+        데이터를 불러오는 중...
       </div>
     );
   }
@@ -33,7 +46,7 @@ export default function Dashboard() {
               현재 시간은 {new Date().toLocaleTimeString('ko-KR', { hour: 'numeric', minute: 'numeric' })} 입니다, {user?.nickname || ''}님
             </h1>
             <p className="text-sm text-muted-foreground">
-              \ud604\uc7ac \ud3ec\ud2b8\ud3f4\ub9ac\uc624 \uc0c1\ud669\uc785\ub2c8\ub2e4.
+              현재 포트폴리오 상황입니다.
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -49,28 +62,28 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          label="\ud3ec\ud2b8\ud3f4\ub9ac\uc624 \uac00\uce58"
+          label="포트폴리오 가치"
           value={stats ? formatKRW(stats.portfolioValueKRW) : "--"}
           delta={stats && stats.portfolioValueKRW && stats.dailyPnL ? (stats.dailyPnL / (stats.portfolioValueKRW - stats.dailyPnL)) * 100 : 0}
           icon={Wallet}
           accent="primary"
         />
         <StatCard
-          label="\uc77c\uac04 \uc190\uc775"
+          label="일간 손익"
           value={stats ? `${stats.dailyPnL >= 0 ? "+" : ""}${formatKRW(stats.dailyPnL)}` : "--"}
           delta={stats && stats.portfolioValueKRW && stats.dailyPnL ? (stats.dailyPnL / (stats.portfolioValueKRW - stats.dailyPnL)) * 100 : 0}
           icon={TrendingUp}
           accent="primary"
         />
         <StatCard
-          label="BTC/\uc54c\ud2b8 \ube44\uc728"
+          label="BTC/알트 비율"
           value={stats ? `${stats.btcRatio} / ${stats.altRatio}` : "--"}
-          hint="\ud3ec\ud2b8\ud3f4\ub9ac\uc624 \ub0b4 BTC \ube44\uc911"
+          hint="포트폴리오 내 BTC 비중"
           icon={Bitcoin}
           accent="warning"
         />
         <StatCard
-          label="24\uc2dc\uac04 \uac70\ub798"
+          label="24시간 거래"
           value={stats ? `${stats.trades24h}` : "--"}
           delta={0}
           icon={Activity}
@@ -79,15 +92,20 @@ export default function Dashboard() {
       </div>
       <CoinOneTicker />
 
+      <TotalAllocationChart
+        breakdown={classBreakdown}
+        totalValueKRW={totalValueKRW}
+        exchangeRate={exchangeRate}
+      />
+
       <div className="grid lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-4">
-          <PortfolioChart />
-          <AllocationChart />
+          <PortfolioChart totalValueKRW={totalValueKRW} />
         </div>
         <div className="space-y-4">
           <AIBriefing />
-          <CorrelationAnalysis />
-          <RiskScore score={38} />
+          <CorrelationAnalysis correlations={correlations} />
+          <RiskScore score={riskScore} />
           <WhaleAlerts />
         </div>
       </div>

@@ -1,3 +1,5 @@
+import type { ClassBreakdown } from './aggregatePortfolio';
+
 export interface CorrelationPair {
   assetA: string;
   assetB: string;
@@ -77,4 +79,95 @@ export function getSeedCorrelations(): CorrelationPair[] {
  */
 export function getCorrelationMatrix(): CorrelationPair[] {
   return getSeedCorrelations();
+}
+
+/**
+ * 개인 포트폴리오 맞춤형 상관관계 분석
+ * 사용자가 실제 보유한 자산군 비중을 반영하여 상관계수를 가중 조정
+ */
+export function getPersonalizedCorrelations(
+  breakdown: ClassBreakdown[],
+  totalValueKRW: number,
+): CorrelationPair[] {
+  if (!breakdown.length || totalValueKRW <= 0) return [];
+
+  const classMap = new Map(breakdown.map((b) => [b.assetClass, b.valueKRW]));
+  const koreanPct = ((classMap.get('korean') ?? 0) / totalValueKRW) * 100;
+  const usPct = ((classMap.get('us') ?? 0) / totalValueKRW) * 100;
+  const cryptoPct = ((classMap.get('crypto') ?? 0) / totalValueKRW) * 100;
+
+  const hasKorean = koreanPct > 0;
+  const hasUS = usPct > 0;
+  const hasCrypto = cryptoPct > 0;
+  const activeCount = [hasKorean, hasUS, hasCrypto].filter(Boolean).length;
+
+  if (activeCount < 2) return [];
+
+  const pairs: CorrelationPair[] = [];
+  const seeds = getSeedCorrelations();
+
+  if (hasCrypto && hasUS) {
+    const seed = seeds.find((p) => p.assetA === 'BTC' && p.assetB === 'Nasdaq');
+    if (seed) {
+      const weightedR = seed.coefficient * (1 + cryptoPct * 0.003);
+      pairs.push({
+        ...seed,
+        coefficient: Math.min(0.95, weightedR),
+        description: `내 포트폴리오의 암호화폐 비중 ${cryptoPct.toFixed(0)}% 반영. ${seed.description}`,
+      });
+    }
+  }
+
+  if (hasCrypto && hasKorean) {
+    const seed = seeds.find((p) => p.assetA === 'BTC' && p.assetB === 'KOSPI');
+    if (seed) {
+      const weightedR = seed.coefficient * (1 + cryptoPct * 0.002);
+      pairs.push({
+        ...seed,
+        coefficient: Math.min(0.9, weightedR),
+        description: `내 포트폴리오 암호화폐 ${cryptoPct.toFixed(0)}% + 국내 주식 ${koreanPct.toFixed(0)}% 구성 반영. ${seed.description}`,
+      });
+    }
+  }
+
+  if (hasKorean && hasUS) {
+    const seed = seeds.find((p) => p.assetA === '국내 주식' && p.assetB === '미국 주식');
+    if (seed) {
+      const balanceFactor = 1 - Math.abs((koreanPct - usPct) / (koreanPct + usPct)) * 0.3;
+      const adjustedR = seed.coefficient * balanceFactor;
+      pairs.push({
+        ...seed,
+        coefficient: adjustedR,
+        description: `국내(${koreanPct.toFixed(0)}%):미국(${usPct.toFixed(0)}%) 비중 반영. ${seed.description}`,
+      });
+    }
+  }
+
+  if (hasCrypto && (hasKorean || hasUS)) {
+    const seed = seeds.find((p) => p.assetA === 'BTC' && p.assetB === 'USD/KRW');
+    if (seed) {
+      const fxWeight = hasUS ? 1.2 : 0.8;
+      pairs.push({
+        ...seed,
+        coefficient: seed.coefficient * fxWeight,
+        description: hasUS
+          ? `미국 자산 보유로 환율 민감도 ${(fxWeight * 100).toFixed(0)}% 반영. ${seed.description}`
+          : `국내 자산 중심으로 환율 영향 상대적 ${(fxWeight * 100).toFixed(0)}% 수준. ${seed.description}`,
+      });
+    }
+  }
+
+  if (pairs.length > 0) {
+    const avgR = pairs.reduce((s, p) => s + p.coefficient, 0) / pairs.length;
+    const diversificationBonus = Math.min(0.3, activeCount * 0.1);
+    pairs.push({
+      assetA: '내 포트폴리오',
+      assetB: '시장 평균',
+      coefficient: avgR * (1 - diversificationBonus),
+      label: '포트폴리오 종합',
+      description: `${activeCount}개 자산군 분산 투자로 종합 상관계수 ${(diversificationBonus * 100).toFixed(0)}% 경감. 분산 효과가 리스크를 낮추고 있습니다.`,
+    });
+  }
+
+  return pairs;
 }

@@ -1,8 +1,12 @@
 import { Card } from "@/components/ui/card";
 import { useEffect, useMemo, useState } from "react";
 
+interface PortfolioChartProps {
+  totalValueKRW?: number;
+}
+
 // Lightweight inline SVG sparkline / area chart (TradingView-inspired)
-export const PortfolioChart = () => {
+export const PortfolioChart = ({ totalValueKRW }: PortfolioChartProps) => {
   const [tick, setTick] = useState(0);
   useEffect(() => {
     const id = setInterval(() => setTick((t) => t + 1), 2200);
@@ -42,7 +46,11 @@ export const PortfolioChart = () => {
           <p className="font-label mt-0.5">최근 24시간 실시간</p>
         </div>
         <div className="text-right">
-          <div className="font-display text-xl md:text-2xl font-semibold leading-tight">₩ 38,420,500</div>
+          <div className="font-display text-xl md:text-2xl font-semibold leading-tight">
+            {totalValueKRW != null
+              ? `₩ ${Math.round(totalValueKRW).toLocaleString('ko-KR')}`
+              : '₩ 0'}
+          </div>
           <div className={`text-sm font-mono tabular-nums ${positive ? "text-primary" : "text-bear"}`}>
             {positive ? "+" : ""}
             {change.toFixed(2)}%

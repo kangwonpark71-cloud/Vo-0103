@@ -1,5 +1,10 @@
 import { Card } from '@/components/ui/card';
-import { getCorrelationMatrix } from '@/lib/correlationAnalysis';
+import type { CorrelationPair } from '@/lib/correlationAnalysis';
+import { getSeedCorrelations } from '@/lib/correlationAnalysis';
+
+interface CorrelationAnalysisProps {
+  correlations?: CorrelationPair[];
+}
 
 const colorForCoefficient = (r: number): string => {
   if (r > 0.5) return 'text-green-500';
@@ -24,8 +29,8 @@ const barForCoefficient = (r: number): { width: string; color: string } => {
   };
 };
 
-export const CorrelationAnalysis = () => {
-  const pairs = getCorrelationMatrix();
+export const CorrelationAnalysis = ({ correlations }: CorrelationAnalysisProps) => {
+  const pairs = correlations && correlations.length > 0 ? correlations : getSeedCorrelations();
 
   return (
     <Card className="glass p-4 md:p-5">
@@ -33,7 +38,9 @@ export const CorrelationAnalysis = () => {
         자산 간 상관관계
       </h3>
       <p className="font-label mb-4">
-        과거 데이터 기반 예측 상관계수 (Pearson r)
+        {correlations && correlations.length > 0
+          ? '내 포트폴리오 기준 맞춤형 상관계수 (Pearson r)'
+          : '과거 데이터 기반 예측 상관계수 (Pearson r)'}
       </p>
       <div className="space-y-3">
         {pairs.map((pair, idx) => {
