@@ -6,10 +6,12 @@ import { WhaleAlerts } from "@/components/widgets/WhaleAlerts";
 import { CorrelationAnalysis } from "@/components/widgets/CorrelationAnalysis";
 import { TradeJournal } from "@/components/widgets/TradeJournal";
 import { TotalAllocationChart } from "@/components/widgets/TotalAllocationChart";
+import { CustomAlerts } from "@/components/widgets/CustomAlerts";
 import { Wallet, TrendingUp, Activity, Bitcoin, RefreshCw } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { CoinOneTicker } from "@/components/widgets/CoinOneTicker";
 import { usePortfolioAutoSync } from "@/hooks/usePortfolioAutoSync";
+import { useAlertEngine } from "@/hooks/useAlertEngine";
 import { formatKRW } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import type { CorrelationPair } from "@/lib/correlationAnalysis";
@@ -29,6 +31,15 @@ export default function Dashboard() {
   const correlations: CorrelationPair[] = classBreakdown.length > 0
     ? getPersonalizedCorrelations(classBreakdown, totalValueKRW)
     : [];
+
+  const alertEngine = useAlertEngine({
+    classBreakdown,
+    holdings,
+    totalValueKRW,
+    exchangeRate,
+    btcRatio: stats?.btcRatio ?? 0,
+    dailyPnL: stats?.dailyPnL ?? 0,
+  });
 
   if (loading) {
     return (
@@ -107,6 +118,14 @@ export default function Dashboard() {
           <CorrelationAnalysis correlations={correlations} />
           <RiskScore score={riskScore} />
           <WhaleAlerts />
+          <CustomAlerts
+            rules={alertEngine.rules}
+            onAdd={alertEngine.addRule}
+            onUpdate={alertEngine.updateRule}
+            onDelete={alertEngine.deleteRule}
+            onToggle={alertEngine.toggleRule}
+            onCreateDefault={alertEngine.createDefaultRule}
+          />
         </div>
       </div>
 

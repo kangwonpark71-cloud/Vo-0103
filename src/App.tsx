@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/AuthContext';
+import { Toaster } from 'sonner';
 import Dashboard from '@/pages/app/Dashboard';
 import Portfolio from '@/pages/app/Portfolio';
 import TradingHistory from '@/pages/app/TradingHistory';
@@ -40,6 +41,7 @@ function Nav() {
 function AppLayout() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+      <Toaster position="top-right" richColors />
       <Nav />
       <main className="mx-auto max-w-7xl px-6 py-6">
         <Routes>
